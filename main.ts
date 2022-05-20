@@ -1,14 +1,40 @@
 const canvas = <HTMLCanvasElement>document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+const paddleHeight:number = 10;
+const paddleWidth:number = 75;
 const ballRadius:number = 10;
+
+let paddleX:number = (canvas.width - paddleWidth) / 2;
+let rightPressed:boolean = false;
+let leftPressed:boolean = false; 
 
 let x:number = canvas.width/2;
 let y:number = canvas.height-30;
 let b_x:number = 2;
 let b_y:number = -2;
 
-setInterval(draw, 10);
+document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("keydown", keyDownHandler, false);
+
+setInterval(draw, 10)
+
+function keyDownHandler(e) {
+    if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+    } else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+    }
+
+}
+
+function keyUpHandler(e) {
+    if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    } else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+    }
+}
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -19,9 +45,14 @@ function draw() {
     }
 
     if (x + b_x < ballRadius || x + b_x > canvas.width - ballRadius) {
-        b_x = -b_x; 
+        b_x = -b_x;
     }
 
+    if (rightPressed && paddleX < canvas.width - paddleWidth) {
+        paddleX += 7;
+    } else if (leftPressed && paddleX > 0) {
+        paddleX -= 7;
+    }
     x += b_x;
     y += b_y;
 }
@@ -32,4 +63,12 @@ function drawBall() {
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();    
+}
+
+function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#0095DD"
+    ctx.fill();
+    ctx.closePath();
 }
