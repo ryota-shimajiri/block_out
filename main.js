@@ -15,9 +15,8 @@ var b_x = 2;
 var b_y = -2;
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("keydown", keyDownHandler, false);
-setInterval(draw, 10);
+var interval = setInterval(draw, 10);
 function keyDownHandler(e) {
-    console.log(e.key);
     if (e.key === "Right" || e.key === "ArrowRight") {
         rightPressed = true;
     }
@@ -26,7 +25,6 @@ function keyDownHandler(e) {
     }
 }
 function keyUpHandler(e) {
-    console.log(e.key);
     if (e.key === "Right" || e.key === "ArrowRight") {
         rightPressed = false;
     }
@@ -38,8 +36,18 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBall();
     drawPaddle();
-    if (y + b_y < ballRadius || y + b_y > canvas.height - ballRadius) {
+    if (y + b_y < ballRadius) {
         b_y = -b_y;
+    }
+    else if (y + b_y > canvas.height - ballRadius) {
+        if (x > paddleX && x < paddleX + paddleWidth) {
+            b_y = -b_y;
+        }
+        else {
+            alert("GAME OVER");
+            document.location.reload();
+            clearInterval(interval);
+        }
     }
     if (x + b_x < ballRadius || x + b_x > canvas.width - ballRadius) {
         b_x = -b_x;
@@ -56,14 +64,14 @@ function draw() {
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#ffa500";
     ctx.fill();
     ctx.closePath();
 }
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#00ff00";
     ctx.fill();
     ctx.closePath();
 }
