@@ -5,14 +5,16 @@ canvas.setAttribute("height", "320");
 var ctx = canvas.getContext("2d");
 var paddleHeight = 10;
 var paddleWidth = 75;
-var ballRadius = 10;
+// ボールの大きさ
+var ballRadius = 8;
+// ボールのスピード
+var b_x = 3;
+var b_y = -3;
 var paddleX = (canvas.width - paddleWidth) / 2;
 var rightPressed = false;
 var leftPressed = false;
 var x = canvas.width / 2;
 var y = canvas.height - 30;
-var b_x = 2;
-var b_y = -2;
 var brickRowCount = 3;
 var brickColumnCount = 5;
 var brickWidth = 75;
@@ -20,6 +22,7 @@ var brickHeight = 20;
 var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
+var lives = 3;
 var score = 0;
 var bricks = [];
 for (var i = 0; i < brickColumnCount; i++) {
@@ -31,7 +34,7 @@ for (var i = 0; i < brickColumnCount; i++) {
 document.addEventListener("mousemove", mouseMoveHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("keydown", keyDownHandler, false);
-var interval = setInterval(draw, 10);
+draw();
 function keyDownHandler(e) {
     if (e.key === "Right" || e.key === "ArrowRight") {
         rightPressed = true;
@@ -54,6 +57,7 @@ function draw() {
     drawBall();
     drawPaddle();
     drawScore();
+    drawLives();
     coollisionDetection();
     if (y + b_y < ballRadius) {
         b_y = -b_y;
@@ -63,9 +67,18 @@ function draw() {
             b_y = -b_y;
         }
         else {
-            alert("GAME OVER");
-            document.location.reload();
-            clearInterval(interval);
+            lives--;
+            if (!lives) {
+                alert("GAME OVER");
+                document.location.reload();
+            }
+            else {
+                x = canvas.width / 2;
+                y = canvas.height - 30;
+                b_y = 3;
+                b_y = -3;
+                paddleX = (canvas.width - paddleWidth) / 2;
+            }
         }
     }
     if (x + b_x > canvas.width - ballRadius || x + b_x < ballRadius) {
@@ -79,6 +92,7 @@ function draw() {
     }
     x += b_x;
     y += b_y;
+    requestAnimationFrame(draw);
 }
 function drawBall() {
     ctx.beginPath();
@@ -104,7 +118,7 @@ function drawBricks() {
                 bricks[i][j].y = brickY;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = "#0095DD";
+                ctx.fillStyle = "#a52a2a";
                 ctx.fill();
                 ctx.closePath();
             }
@@ -135,6 +149,11 @@ function drawScore() {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
     ctx.fillText("Score: " + score, 8, 20);
+}
+function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
 }
 function mouseMoveHandler(e) {
     var relativeX = e.clientX - canvas.offsetLeft;

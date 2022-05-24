@@ -5,14 +5,17 @@ canvas.setAttribute("height", "320");
 const ctx = canvas.getContext("2d");
 const paddleHeight: number = 10;
 const paddleWidth: number = 75;
-const ballRadius: number = 10;
+// ボールの大きさ
+const ballRadius: number = 8;
+// ボールのスピード
+let b_x: number = 3;
+let b_y: number = -3;
+
 let paddleX: number = (canvas.width - paddleWidth) / 2;
 let rightPressed: boolean = false;
 let leftPressed: boolean = false;
 let x: number = canvas.width / 2;
 let y: number = canvas.height - 30;
-let b_x: number = 2;
-let b_y: number = -2;
 const brickRowCount:number = 3;
 const brickColumnCount:number = 5;
 const brickWidth:number = 75;
@@ -20,6 +23,7 @@ const brickHeight:number = 20;
 const brickPadding:number = 10;
 const brickOffsetTop:number = 30;
 const brickOffsetLeft:number = 30;
+let lives:number = 3;
 let score:number = 0;
 
 const bricks = [];
@@ -33,7 +37,7 @@ document.addEventListener("mousemove", mouseMoveHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("keydown", keyDownHandler, false);
 
-const interval: number = setInterval(draw, 10)
+draw();
 
 function keyDownHandler(e: { key: string; }) {
     if (e.key === "Right" || e.key === "ArrowRight") {
@@ -57,6 +61,7 @@ function draw() {
     drawBall();
     drawPaddle();
     drawScore();
+    drawLives();
     coollisionDetection();
 
     if (y + b_y < ballRadius) {
@@ -65,9 +70,17 @@ function draw() {
         if (x > paddleX && x < paddleX + paddleWidth) {
             b_y = -b_y;
         } else {
-            alert("GAME OVER");
-            document.location.reload();
-            clearInterval(interval);
+            lives--;
+            if(!lives) {
+                alert("GAME OVER");
+                document.location.reload();    
+            } else {
+                x = canvas.width / 2;
+                y = canvas.height - 30;
+                b_y = 3;
+                b_y = -3;
+                paddleX = (canvas.width - paddleWidth) / 2;
+            }
         }
     }
 
@@ -82,6 +95,7 @@ function draw() {
     }
     x += b_x;
     y += b_y;
+    requestAnimationFrame(draw);
 }
 
 function drawBall() {
@@ -110,7 +124,7 @@ function drawBricks() {
                 bricks[i][j].y = brickY;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = "#0095DD";
+                ctx.fillStyle = "#a52a2a";
                 ctx.fill();
                 ctx.closePath();
             }
@@ -143,6 +157,12 @@ function drawScore() {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
     ctx.fillText("Score: " + score, 8, 20);
+}
+
+function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
 }
 
 function mouseMoveHandler(e) {
